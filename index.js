@@ -1,6 +1,9 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
+const fs = require("fs")
 const url = "https://vnznailandbeautysupplies.co.nz";
+
+var json = {}
 
 function retrieveProduct(data) {
   let $ = cheerio.load(data);
@@ -19,3 +22,5 @@ axios.get(url).then(res => {
       .then(res => retrieveProduct(res.data))
   });
 });
+
+fs.writeFile('myjsonfile.json', json, 'utf8');
