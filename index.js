@@ -8,17 +8,23 @@ function retrieveProduct(data) {
 		let $ = cheerio.load(data);
 		let nextPage = $("ul.pagination > li:last-child > a").attr("href");
 		let arr = [];
-		$(".product-name").each((index, element) => {
-			arr.push(
-				$(element)
+		$(".product-main-info").each((index, element) => {
+			arr.push({
+				name: $(element)
+					.find(".product-name > a > span")
+					.text()
+					.trim(),
+				price: $(element)
+					.find(".oe_currency_value")
 					.text()
 					.trim()
-			);
+			});
 		});
 		if (nextPage != undefined) {
 			let res = await axios.get(url + nextPage);
 			let nextPageProduct = await retrieveProduct(res.data);
-			let result = await arr.concat(nextPageProduct);
+            let result = await arr.concat(nextPageProduct);
+            console.log(result)
 			resolve(result);
 		} else {
 			resolve(arr);
@@ -52,7 +58,6 @@ async function main() {
 		let product = await retrieveProduct(res.data);
 		json[title] = product;
 		count += 1;
-		console.log(count);
 		count == menuLength && outputToJSON(json, "nailData.json");
 	});
 }
