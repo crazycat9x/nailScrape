@@ -43,8 +43,8 @@ function outputToJSON(json, path) {
 }
 
 async function main() {
-	let json = {};
-	let res = await axios.get(url);
+    let json = {};
+    let res = await axios.get(url);
 	let data = res.data;
 	let $ = cheerio.load(data);
 	let menu = $(".sub-mainmenu > li > a");
