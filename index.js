@@ -58,7 +58,3 @@ async function main() {
 }
 
 main();
-
-// console.log(json);
-
-// fs.writeFile("myjsonfile.json", json, "utf8");
