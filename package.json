@@ -1,23 +1,23 @@
 {
-  "name": "nailscrape",
-  "version": "1.0.0",
-  "description": "scrape data from a large nail supply provider",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/crazycat9x/nailScrape.git"
-  },
-  "author": "Tien",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/crazycat9x/nailScrape/issues"
-  },
-  "homepage": "https://github.com/crazycat9x/nailScrape#readme",
-  "dependencies": {
-    "axios": "^0.18.0",
-    "cheerio": "^1.0.0-rc.2"
-  }
+	"name": "nailscrape",
+	"version": "1.0.0",
+	"description": "scrape data from a large nail supply provider",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/crazycat9x/nailScrape.git"
+	},
+	"author": "Tien",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/crazycat9x/nailScrape/issues"
+	},
+	"homepage": "https://github.com/crazycat9x/nailScrape#readme",
+	"dependencies": {
+		"axios": "^0.18.0",
+		"cheerio": "^1.0.0-rc.2"
+	}
 }
