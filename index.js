@@ -1,26 +1,45 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
-const fs = require("fs")
+const fs = require("fs");
 const url = "https://vnznailandbeautysupplies.co.nz";
 
-var json = {}
+var json = {};
 
 function retrieveProduct(data) {
-  let $ = cheerio.load(data);
-  let nextPage = $("ul.pagination > li:last-child > a").attr("href")
-  console.log($(".product-name").text())
-  if(nextPage){
-    axios.get(url+nextPage).then(res => retrieveProduct(res.data))
-  }
+  return new Promise(async resolve => {
+    let $ = cheerio.load(data);
+    let nextPage = $("ul.pagination > li:last-child > a").attr("href");
+    let arr = [];
+    $(".product-name").each((index, element) => {
+      arr.push(
+        $(element)
+          .text()
+          .trim()
+      );
+    });
+    if (nextPage != undefined) {
+      let res = await axios.get(url + nextPage);
+      let nextPageProduct = await retrieveProduct(res.data)
+      let result = await arr.concat(nextPageProduct);
+      resolve(result);
+    } else {
+      resolve(arr);
+    }
+  });
 }
 
-axios.get(url).then(res => {
-  let $ = cheerio.load(res.data);
-  $(".sub-mainmenu > li > a").each((index, element) => {
-    axios
-      .get(url + $(element).attr("href"))
-      .then(res => retrieveProduct(res.data))
+async function main() {
+  let res = await axios.get(url);
+  let data = res.data;
+  let $ = cheerio.load(data);
+  let menu = $(".sub-mainmenu > li > a");
+  menu.each(async function(index, element) {
+    let res = await axios.get(url + $(element).attr("href"));
+    let product = await retrieveProduct(res.data);
+    console.log(product)
   });
-});
+}
 
-fs.writeFile('myjsonfile.json', json, 'utf8');
+main();
+
+// fs.writeFile("myjsonfile.json", json, "utf8");
