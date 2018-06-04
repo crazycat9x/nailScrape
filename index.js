@@ -24,7 +24,6 @@ function retrieveProduct(data) {
 			let res = await axios.get(url + nextPage);
 			let nextPageProduct = await retrieveProduct(res.data);
             let result = await arr.concat(nextPageProduct);
-            console.log(result)
 			resolve(result);
 		} else {
 			resolve(arr);
