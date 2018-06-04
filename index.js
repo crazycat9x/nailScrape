@@ -3,30 +3,42 @@ const cheerio = require("cheerio");
 const fs = require("fs");
 const url = "https://vnznailandbeautysupplies.co.nz";
 
-function retrieveProduct(data) {
+function retrieveProducts(data) {
+	// function will return a promise that products will be retrieved
 	return new Promise(async resolve => {
 		let $ = cheerio.load(data);
+		// the product category page is paginated so we must get the link to next page 
+		// will return undefined if next page doesnt exist
 		let nextPage = $("ul.pagination > li:last-child > a").attr("href");
-		let arr = [];
+		let productArr = [];
+		// for each product, add its infos to the array
 		$(".product-main-info").each((index, element) => {
-			arr.push({
+			productArr.push({
+				// get the product name
 				name: $(element)
 					.find(".product-name > a > span")
 					.text()
 					.trim(),
+				// get the product price
 				price: $(element)
 					.find(".oe_currency_value")
 					.text()
 					.trim()
 			});
 		});
+		// check if there exist next page
 		if (nextPage != undefined) {
+			// get html of next page
 			let res = await axios.get(url + nextPage);
-			let nextPageProduct = await retrieveProduct(res.data);
-            let result = await arr.concat(nextPageProduct);
+			// make recursive call to get products infos of all remaining pages
+			let nextPageProduct = await retrieveProducts(res.data);
+			// concatinate the product infos of this page with the remaining pages
+			let result = productArr.concat(nextPageProduct);
+			// resolve the promise by returning the result
 			resolve(result);
 		} else {
-			resolve(arr);
+			// if there is no other pages then resolve the promise by returning the product infos of this page
+			resolve(productArr);
 		}
 	});
 }
@@ -42,22 +54,28 @@ function outputToJSON(json, path) {
 }
 
 async function main() {
-    let json = {};
-    let res = await axios.get(url);
+	let json = {};
+	let res = await axios.get(url);
+	// get homepage html
 	let data = res.data;
 	let $ = cheerio.load(data);
-	let menu = $(".sub-mainmenu > li > a");
-	let menuLength = menu.length;
+	// get all links of product categories & number of links
+	let categories = $(".sub-mainmenu > li > a");
+	let categoriesLength = categories.length;
+	// counter for numbers of links scraped
 	let count = 0;
-	menu.each(async function(index, element) {
-		let title = $(element)
+	categories.each(async function(index, element) {
+		let category = $(element)
 			.find("span")
 			.text();
+		// get the html of the product category page
 		let res = await axios.get(url + $(element).attr("href"));
-		let product = await retrieveProduct(res.data);
-		json[title] = product;
+		// pass the page to retrieveProducts function and wait for the retrieval of products
+		let products = await retrieveProducts(res.data);
+		json[category] = products;
 		count += 1;
-		count == menuLength && outputToJSON(json, "nailData.json");
+		// if all link have been scraped then write to JSON file
+		count == categoriesLength && outputToJSON(json, "nailData.json");
 	});
 }
 
