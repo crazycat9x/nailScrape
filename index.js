@@ -2,6 +2,7 @@ const axios = require("axios");
 const cheerio = require("cheerio");
 const fs = require("fs");
 const url = "https://vnznailandbeautysupplies.co.nz";
+const progressBar = require("./progressBar")
 
 function retrieveProducts(data) {
 	// function will return a promise that products will be retrieved
@@ -62,6 +63,8 @@ async function main() {
 	// get all links of product categories & number of links
 	let categories = $(".sub-mainmenu > li > a");
 	let categoriesLength = categories.length;
+	// initialize terminal progress bar
+	let progress = new progressBar(categoriesLength, "=")
 	// counter for numbers of links scraped
 	let count = 0;
 	categories.each(async function(index, element) {
@@ -74,6 +77,8 @@ async function main() {
 		let products = await retrieveProducts(res.data);
 		json[category] = products;
 		count += 1;
+		// increment progress
+		progress.update()
 		// if all link have been scraped then write to JSON file
 		count == categoriesLength && outputToJSON(json, "nailData.json");
 	});
