@@ -2,13 +2,13 @@ const axios = require("axios");
 const cheerio = require("cheerio");
 const fs = require("fs");
 const url = "https://vnznailandbeautysupplies.co.nz";
-const progressBar = require("./progressBar")
+const progressBar = require("./progressBar");
 
 function retrieveProducts(data) {
 	// function will return a promise that products will be retrieved
 	return new Promise(async resolve => {
 		let $ = cheerio.load(data);
-		// the product category page is paginated so we must get the link to next page 
+		// the product category page is paginated so we must get the link to next page
 		// will return undefined if next page doesnt exist
 		let nextPage = $("ul.pagination > li:last-child > a").attr("href");
 		let productArr = [];
@@ -54,7 +54,7 @@ function outputToJSON(json, path) {
 	});
 }
 
-async function main() {
+void async function main() {
 	let json = {};
 	let res = await axios.get(url);
 	// get homepage html
@@ -64,7 +64,7 @@ async function main() {
 	let categories = $(".sub-mainmenu > li > a");
 	let categoriesLength = categories.length;
 	// initialize terminal progress bar
-	let progress = new progressBar(categoriesLength, "=")
+	let progress = new progressBar(categoriesLength, "=");
 	// counter for numbers of links scraped
 	let count = 0;
 	categories.each(async function(index, element) {
@@ -78,10 +78,8 @@ async function main() {
 		json[category] = products;
 		count += 1;
 		// increment progress
-		progress.update()
+		progress.update();
 		// if all link have been scraped then write to JSON file
 		count == categoriesLength && outputToJSON(json, "nailData.json");
 	});
-}
-
-main();
+}();
