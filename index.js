@@ -4,6 +4,7 @@ const fs = require("fs");
 const url = "https://vnznailandbeautysupplies.co.nz";
 const progressBar = require("./progressBar");
 
+// this is a recursive asynchronous function, please edit with care
 function retrieveProducts(data) {
 	// function will return a promise that products will be retrieved
 	return new Promise(async resolve => {
@@ -54,6 +55,7 @@ function outputToJSON(json, path) {
 	});
 }
 
+// immediately-invoked function expression (IIFE)
 void async function main() {
 	let json = {};
 	let res = await axios.get(url);
